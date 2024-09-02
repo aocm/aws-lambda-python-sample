@@ -1,4 +1,5 @@
 
 def lambda_handler(event, context):
-    print("hoge")
-
+    text = "hoge"
+    print(text)
+    return text
