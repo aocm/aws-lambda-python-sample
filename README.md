@@ -3,24 +3,27 @@
 
 ## 概要
 
+wip
 
-## このリポジトリ同等の資材作り方・流れ
+## 事前準備
 
-### 事前準備
-sam
-https://docs.aws.amazon.com/ja_jp/serverless-application-model/latest/developerguide/install-sam-cli.html
-
-poetry 
+poetry
 https://python-poetry.org/docs/
 
-### setup
+
+## このリポジトリ同等の資材作り方・流れメモ
+以下作業はこのリポジトリを利用する分には不要。
+
+```bash
 poetry init
 
-※すべてyes
+# すべてyes
+# poetry new aws-lambda-python-sample
+# などでも可
 
-poetry new aws-lambda-python-sample
-などでも可
+# 必要なものを追加
+poetry add pytest pre-commit black isort
 
-
-
-
+#.pre-commit-config.yamlを作成し、blackとisortが起動するような記述後に下記を実行
+poetry run pre-commit install
+```
