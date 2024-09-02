@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  CloudFormation template for simple lambda.
+
+# ------------------------------------------------------------#
+# Parameters
+# ------------------------------------------------------------#
+Parameters:
+  LambdaFunctionName:
+    Type: String
+    Default: sample-lambda
+
+Resources:
+# ------------------------------------------------------------#
+# Logs
+# ------------------------------------------------------------#
+  FunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunctionName}"
+      RetentionInDays: 7   # 7日保持
+
+# ------------------------------------------------------------#
+# IAM
+# ------------------------------------------------------------#
+  FunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "for-lambdafunction-${LambdaFunctionName}"
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: '/service-role/'
+      Policies:
+        - PolicyName: write-cloudwatchlogs
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaFunctionName}:*"
+
+# ------------------------------------------------------------#
+# Lambda
+# ------------------------------------------------------------#
+  SampleLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Ref LambdaFunctionName
+      Role: !GetAtt FunctionRole.Arn
+      Runtime: python3.12
+      Handler: lambda_handler.lambda_handler
+      Code: ./lambda_handler
